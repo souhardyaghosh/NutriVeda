@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MoodAnalysisResult, WellnessData, MoodInputType, DoshaBalance } from '../types';
 import LoadingSpinner from './LoadingSpinner';
@@ -308,12 +309,12 @@ const WeeklyMoodChart: React.FC<{ data: MoodAnalysisResult['weeklyMoods'] }> = (
                 </svg>
 
                  {tooltip && (
-                    <div className="absolute bg-white rounded-lg shadow-lg p-3 border text-sm pointer-events-none" style={{ top: tooltip.y - 100, left: tooltip.x, transform: 'translateY(-100%)' }}>
-                        <p className="font-bold mb-2">{tooltip.day}</p>
+                    <div className="absolute bg-white rounded-lg shadow-lg p-3 border text-sm pointer-events-none text-left" style={{ top: tooltip.y - 100, left: tooltip.x, transform: 'translateY(-100%)' }}>
+                        <p className="font-bold mb-2 text-dark">{tooltip.day}</p>
                         {(['kapha', 'pitta', 'vata'] as const).map(dosha => (
                             <div key={dosha} className="flex justify-between items-center gap-4">
                                <span style={{color: doshaConfig[dosha].color}}>{doshaConfig[dosha].name}:</span>
-                               <span className="font-semibold">{tooltip.balance[dosha]}</span>
+                               <span className="font-semibold text-gray-800">{tooltip.balance[dosha]}</span>
                            </div>
                         ))}
                     </div>
@@ -323,7 +324,7 @@ const WeeklyMoodChart: React.FC<{ data: MoodAnalysisResult['weeklyMoods'] }> = (
                 {(['kapha', 'pitta', 'vata'] as const).map(dosha => (
                     <div key={dosha} className="flex items-center text-sm">
                         <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: doshaConfig[dosha].color }}></span>
-                        <span className="text-gray-600">{doshaConfig[dosha].name}</span>
+                        <span className="text-gray-700 font-medium">{doshaConfig[dosha].name}</span>
                     </div>
                 ))}
             </div>
