@@ -12,6 +12,7 @@ import DonutChart from './components/DonutChart';
 import MoodTrackerScreen from './components/MoodTrackerScreen';
 import CameraView from './components/CameraView';
 import WomensWellnessScreen from './components/WomensWellnessScreen';
+import MenstrualCycleCareScreen from './components/MenstrualCycleCareScreen';
 
 // --- Reusable UI Components ---
 const OnboardingCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -665,7 +666,10 @@ const App: React.FC = () => {
         );
       
       case 'womensWellness':
-        return <WomensWellnessScreen onBack={handleReset} />;
+        return <WomensWellnessScreen onBack={handleReset} setScreen={setScreen} />;
+      
+      case 'menstrualCycleCare':
+        return <MenstrualCycleCareScreen onBack={() => setScreen('womensWellness')} />;
 
       case 'basics':
         return (

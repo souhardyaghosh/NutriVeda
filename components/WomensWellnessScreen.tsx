@@ -63,12 +63,17 @@ const womensWellnessFeatures = [
 
 interface WomensWellnessScreenProps {
   onBack: () => void;
+  setScreen: (screen: string) => void;
 }
 
-const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack }) => {
+const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack, setScreen }) => {
     
   const handleFeatureClick = (title: string) => {
-    alert(`The "${title}" feature is coming soon! Stay tuned for more empowering tools. ✨`);
+    if (title === 'Menstrual Cycle Care') {
+      setScreen('menstrualCycleCare');
+    } else {
+      alert(`The "${title}" feature is coming soon! Stay tuned for more empowering tools. ✨`);
+    }
   };
 
   return (

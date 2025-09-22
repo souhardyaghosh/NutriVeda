@@ -146,6 +146,27 @@ const moodAnalysisSchema = {
     }
 };
 
+const menstrualAdviceSchema = {
+    type: Type.OBJECT,
+    properties: {
+        phaseName: { type: Type.STRING, description: "The name of the menstrual phase, e.g., 'Follicular Phase'." },
+        dailyTips: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "An array of 3-4 distinct, actionable lifestyle, diet, or herbal tips tailored to the phase and symptoms."
+        },
+        remedy: {
+            type: Type.OBJECT,
+            properties: {
+                type: { type: Type.STRING, enum: ['Herbal Tea', 'Yoga Pose'] },
+                name: { type: Type.STRING },
+                description: { type: Type.STRING, description: "A brief, simple description of the remedy and its benefits." }
+            }
+        },
+        affirmation: { type: Type.STRING, description: "A short, calming, and positive daily affirmation." }
+    }
+};
+
 
 function isFamilyMemberArray(data: any): data is FamilyMember[] {
   return Array.isArray(data) && data.length > 0 && 'name' in data[0] && 'goal' in data[0];
@@ -417,5 +438,43 @@ export const analyzeMood = async (
     } catch (error) {
         console.error("Error analyzing mood:", error);
         throw new Error("Failed to get mood analysis from AI service.");
+    }
+};
+
+export const getMenstrualCycleAdvice = async (phase: string, symptoms: string[]): Promise<any> => {
+    const symptomsString = symptoms.length > 0 ? symptoms.join(', ') : 'none reported';
+
+    const prompt = `
+    Objective: Generate Ayurveda-based wellness advice for a woman based on her menstrual cycle phase and reported symptoms. The tone should be gentle, supportive, and empathetic.
+
+    User's Context:
+    - Menstrual Phase: ${phase}
+    - Reported Symptoms: ${symptomsString}
+
+    Task:
+    Provide a JSON object adhering to the specified schema with the following content:
+    1.  **phaseName**: Confirm the phase name.
+    2.  **dailyTips**: Generate 3-4 unique, practical tips. Combine diet (e.g., 'Incorporate iron-rich foods like spinach and lentils'), lifestyle (e.g., 'Engage in gentle stretching or a short walk'), and self-care (e.g., 'Use a warm compress on your lower abdomen').
+    3.  **remedy**: Suggest one specific, simple remedy. It should be either an 'Herbal Tea' (e.g., Ginger Tea, Chamomile Tea) or a 'Yoga Pose' (e.g., Child's Pose (Balasana), Cat-Cow Pose (Marjaryasana-Bitilasana)). Provide its name and a brief description.
+    4.  **affirmation**: Write a short, empowering affirmation.
+
+    The output must be a single, valid JSON object without any markdown or extra text.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: menstrualAdviceSchema,
+            },
+        });
+
+        const jsonText = response.text.trim();
+        return JSON.parse(jsonText);
+    } catch (error) {
+        console.error("Error generating menstrual cycle advice:", error);
+        throw new Error("Failed to get menstrual cycle advice from AI service.");
     }
 };
