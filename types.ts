@@ -124,3 +124,20 @@ export interface MoodAnalysisResult {
   weeklyMoods: { day: string; doshaBalance: DoshaBalance }[];
   wellnessAdvice?: string; // Optional advice based on wellness data
 }
+
+// --- Hormonal Health Types ---
+export interface Recipe {
+  name: string;
+  description: string;
+  ingredients: string[];
+  instructions: string;
+  imageUrl?: string; // Optional field to cache generated image
+}
+
+export interface HormonalAdvice {
+  todayTip: string;
+  doshaAdvice: string;
+  lifestyleSuggestions: string[];
+  foodSuggestions: string[];
+  recipes: Recipe[];
+}

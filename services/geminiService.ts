@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
-import { UserData, DietPlan, Meal, FamilyMember, FoodAnalysis, MoodAnalysisResult, WellnessData, MoodInputType, DoshaBalance } from '../types';
+import { UserData, DietPlan, Meal, FamilyMember, FoodAnalysis, MoodAnalysisResult, WellnessData, MoodInputType, DoshaBalance, HormonalAdvice } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable is not set.");
@@ -164,6 +164,29 @@ const menstrualAdviceSchema = {
             }
         },
         affirmation: { type: Type.STRING, description: "A short, calming, and positive daily affirmation." }
+    }
+};
+
+const hormonalAdviceSchema = {
+    type: Type.OBJECT,
+    properties: {
+        todayTip: { type: Type.STRING, description: "A single, highly actionable wellness tip for the user's day." },
+        doshaAdvice: { type: Type.STRING, description: "Advice on balancing Vata, Pitta, and Kapha for the specified condition." },
+        lifestyleSuggestions: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of 3-5 lifestyle tips." },
+        foodSuggestions: { type: Type.ARRAY, items: { type: Type.STRING }, description: "List of 3-5 recommended foods or food groups." },
+        recipes: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING },
+                    description: { type: Type.STRING, description: "A brief, enticing description of the recipe." },
+                    ingredients: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    instructions: { type: Type.STRING, description: "Step-by-step cooking instructions." }
+                }
+            },
+            description: "Provide 2 simple, healthy Indian recipes suitable for the user's condition."
+        }
     }
 };
 
@@ -476,5 +499,42 @@ export const getMenstrualCycleAdvice = async (phase: string, symptoms: string[])
     } catch (error) {
         console.error("Error generating menstrual cycle advice:", error);
         throw new Error("Failed to get menstrual cycle advice from AI service.");
+    }
+};
+
+export const getHormonalHealthAdvice = async (focusArea: string, priority: string): Promise<HormonalAdvice> => {
+    const prompt = `
+    Objective: Generate Ayurveda-based wellness advice for a woman focusing on hormonal health. The tone should be supportive, knowledgeable, and empowering.
+
+    User's Context:
+    - Focus Area: ${focusArea}
+    - Primary Wellness Priority: ${priority}
+
+    Task:
+    Provide a JSON object adhering to the specified schema.
+    - todayTip: Create a positive, easy-to-implement tip for the day.
+    - doshaAdvice: Explain which doshas are typically imbalanced for the '${focusArea}' condition and suggest ways to pacify them, keeping the '${priority}' goal in mind.
+    - lifestyleSuggestions: Provide 3-5 practical tips related to exercise, daily routine, and stress management.
+    - foodSuggestions: List 3-5 specific, beneficial ingredients or food types.
+    - recipes: Create two simple, healthy Indian recipes. List ingredients clearly. Keep instructions concise.
+
+    The output must be a single, valid JSON object without any markdown or extra text.
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: hormonalAdviceSchema,
+            },
+        });
+
+        const jsonText = response.text.trim();
+        return JSON.parse(jsonText);
+    } catch (error) {
+        console.error("Error generating hormonal health advice:", error);
+        throw new Error("Failed to get hormonal health advice from AI service.");
     }
 };

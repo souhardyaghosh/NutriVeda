@@ -13,6 +13,7 @@ import MoodTrackerScreen from './components/MoodTrackerScreen';
 import CameraView from './components/CameraView';
 import WomensWellnessScreen from './components/WomensWellnessScreen';
 import MenstrualCycleCareScreen from './components/MenstrualCycleCareScreen';
+import HormonalHealthScreen from './components/HormonalHealthScreen';
 
 // --- Reusable UI Components ---
 const OnboardingCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -671,6 +672,9 @@ const App: React.FC = () => {
       case 'menstrualCycleCare':
         return <MenstrualCycleCareScreen onBack={() => setScreen('womensWellness')} />;
 
+      case 'hormonalHealth':
+        return <HormonalHealthScreen onBack={() => setScreen('womensWellness')} />;
+        
       case 'basics':
         return (
             <OnboardingStep title="Let's start with the basics" currentStep={1} totalSteps={TOTAL_STEPS} onBack={() => setScreen('planType')} onNext={() => setScreen('physicalProfile')}>

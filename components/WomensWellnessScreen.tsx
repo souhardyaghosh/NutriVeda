@@ -71,6 +71,8 @@ const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack, set
   const handleFeatureClick = (title: string) => {
     if (title === 'Menstrual Cycle Care') {
       setScreen('menstrualCycleCare');
+    } else if (title === 'Hormonal Health') {
+      setScreen('hormonalHealth');
     } else {
       alert(`The "${title}" feature is coming soon! Stay tuned for more empowering tools. ✨`);
     }
