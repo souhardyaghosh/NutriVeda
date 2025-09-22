@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { patientProfile, appointments, prescriptions, labReports, ayurvedicInsight, billing } from '../dummyData';
+import React, { useState, useRef, useEffect } from 'react';
+import { patientProfile, appointments as initialAppointments, prescriptions, labReports, ayurvedicInsight, billing } from '../dummyData';
 import LoadingSpinner from './LoadingSpinner';
 
 // --- Reusable Components ---
@@ -158,10 +158,10 @@ const PatientProfileCard: React.FC = () => (
     <Card className="md:col-span-2 xl:col-span-3 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="flex-shrink-0 w-24 h-24 bg-light rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4-4z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4-4z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8-8z"/></svg>
             </div>
             <div>
-                <h2 className="text-4xl font-bold">{patientProfile.name}</h2>
+                <h2 className="text-4xl font-bold">{patientProfile.name} 👩</h2>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 mt-2 text-light">
                     <span>Age: {patientProfile.age}</span>
                     <span>Gender: {patientProfile.gender}</span>
@@ -181,50 +181,114 @@ const PatientProfileCard: React.FC = () => (
 );
 
 const AppointmentCard: React.FC = () => {
-    const [bookingStep, setBookingStep] = useState('list'); // 'list', 'specialty', 'slot', 'confirm'
+    const [appointments, setAppointments] = useState(initialAppointments);
+    const [bookingStep, setBookingStep] = useState('list'); // 'list', 'calendar', 'specialty', 'slot', 'confirm'
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
     const [selectedSlot, setSelectedSlot] = useState('');
+    const [calendarDate, setCalendarDate] = useState(new Date());
+
+    const formatDate = (date: Date): string => {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = date.getFullYear().toString().slice(-2);
+        return `${day} ${month} ${year}`;
+    };
 
     const handleBook = () => {
-        // In a real app, this would make an API call.
-        // Here, we'll simulate PDF generation.
-        const appointmentDetails = {
-            patientName: patientProfile.name,
-            doctor: "Dr. Kavita",
+        if (!selectedDate) return;
+        const newAppointment = {
+            date: formatDate(selectedDate),
+            doctor: "Dr. Kavita", // Dummy doctor for new bookings
             specialty: selectedSpecialty,
-            date: "27 Sep 2025",
-            time: selectedSlot,
+            mode: "OPD",
+            status: "Scheduled"
         };
-        generateAppointmentSlip(appointmentDetails);
+        setAppointments(prev => [newAppointment, ...prev]);
         
         // Reset flow
         setBookingStep('list');
+        setSelectedDate(null);
         setSelectedSpecialty('');
         setSelectedSlot('');
     };
     
+    const renderCalendar = () => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const fiveDaysLater = new Date(today);
+        fiveDaysLater.setDate(today.getDate() + 4);
+
+        const month = calendarDate.getMonth();
+        const year = calendarDate.getFullYear();
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const blanks = Array.from({ length: firstDayOfMonth }, (_, i) => <div key={`blank-${i}`}></div>);
+        const days = Array.from({ length: daysInMonth }, (_, i) => {
+            const dayDate = new Date(year, month, i + 1);
+            const isSelected = selectedDate?.getTime() === dayDate.getTime();
+            const isDisabled = dayDate < today || dayDate > fiveDaysLater;
+
+            return (
+                <button
+                    key={i + 1}
+                    disabled={isDisabled}
+                    onClick={() => { setSelectedDate(dayDate); setBookingStep('specialty'); }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-200 ${
+                        isDisabled ? 'text-gray-300 cursor-not-allowed' :
+                        isSelected ? 'bg-primary text-white scale-110 shadow-lg' :
+                        'bg-light text-dark hover:bg-primary/20'
+                    }`}
+                >
+                    {i + 1}
+                </button>
+            );
+        });
+
+        return (
+            <div className="p-4 bg-light rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                    <button onClick={() => setCalendarDate(new Date(year, month - 1))} className="font-bold text-lg">‹</button>
+                    <h4 className="font-bold text-dark">{calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h4>
+                    <button onClick={() => setCalendarDate(new Date(year, month + 1))} className="font-bold text-lg">›</button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500 mb-2">
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d}>{d}</div>)}
+                </div>
+                <div className="grid grid-cols-7 gap-1 place-items-center">
+                    {blanks}
+                    {days}
+                </div>
+                 <button onClick={() => setBookingStep('list')} className="text-sm font-semibold text-gray-500 mt-4">Cancel</button>
+            </div>
+        );
+    };
+
     const renderBookingFlow = () => {
         switch (bookingStep) {
+            case 'calendar':
+                return renderCalendar();
             case 'specialty':
                 return (
                     <div className="p-4 bg-light rounded-lg">
-                        <h4 className="font-bold text-dark mb-2">Select Specialty</h4>
+                        <h4 className="font-bold text-dark mb-2">Select Specialty for {selectedDate && formatDate(selectedDate)}</h4>
                         <div className="space-y-2">
                            {['Ayurveda Gynae', 'Ayurveda Nutrition', 'Panchakarma Therapy'].map(spec => (
-                               <button key={spec} onClick={() => { setSelectedSpecialty(spec); setBookingStep('slot'); }} className="w-full text-left p-2 bg-white rounded-md hover:bg-gray-100">{spec}</button>
+                               <button key={spec} onClick={() => { setSelectedSpecialty(spec); setBookingStep('slot'); }} className="w-full text-left p-2 bg-white rounded-md hover:bg-gray-100 text-dark">{spec}</button>
                            ))}
                         </div>
-                        <button onClick={() => setBookingStep('list')} className="text-sm font-semibold text-gray-500 mt-4">Cancel</button>
+                        <button onClick={() => setBookingStep('calendar')} className="text-sm font-semibold text-gray-500 mt-4">Back</button>
                     </div>
                 );
             case 'slot':
                  return (
                     <div className="p-4 bg-light rounded-lg">
                         <h4 className="font-bold text-dark mb-2">Available Slots for {selectedSpecialty}</h4>
-                        <p className="text-sm text-gray-600 mb-3">with Dr. Kavita on 27 Sep 2025</p>
+                        <p className="text-sm text-gray-600 mb-3">with Dr. Kavita on {selectedDate && formatDate(selectedDate)}</p>
                         <div className="grid grid-cols-3 gap-2">
                            {['4:00 PM', '4:30 PM', '5:30 PM', '6:00 PM'].map(slot => (
-                               <button key={slot} onClick={() => { setSelectedSlot(slot); setBookingStep('confirm'); }} className="p-2 bg-white rounded-md hover:bg-primary hover:text-white">{slot}</button>
+                               <button key={slot} onClick={() => { setSelectedSlot(slot); setBookingStep('confirm'); }} className="p-2 bg-white text-dark rounded-md hover:bg-primary hover:text-white">{slot}</button>
                            ))}
                         </div>
                         <button onClick={() => setBookingStep('specialty')} className="text-sm font-semibold text-gray-500 mt-4">Back</button>
@@ -235,7 +299,7 @@ const AppointmentCard: React.FC = () => {
                      <div className="p-4 bg-light rounded-lg text-center">
                         <h4 className="font-bold text-dark mb-2">Confirm Booking</h4>
                         <p className="text-gray-700">With <span className="font-semibold">Dr. Kavita</span> ({selectedSpecialty})</p>
-                        <p className="text-gray-700">on <span className="font-semibold">27 Sep 2025</span> at <span className="font-semibold">{selectedSlot}</span></p>
+                        <p className="text-gray-700">on <span className="font-semibold">{selectedDate && formatDate(selectedDate)}</span> at <span className="font-semibold">{selectedSlot}</span></p>
                         <div className="flex gap-4 justify-center mt-4">
                             <button onClick={() => setBookingStep('slot')} className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg">Back</button>
                             <button onClick={handleBook} className="bg-primary text-white font-bold py-2 px-4 rounded-lg">Confirm & Book</button>
@@ -273,7 +337,7 @@ const AppointmentCard: React.FC = () => {
             </div>
             <div className="mt-4">
                 {bookingStep !== 'list' ? renderBookingFlow() : (
-                     <button onClick={() => setBookingStep('specialty')} className="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary transition-colors">
+                     <button onClick={() => setBookingStep('calendar')} className="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary transition-colors">
                         Book New Appointment
                     </button>
                 )}
@@ -408,15 +472,15 @@ const AyurvedicInsightCard: React.FC = () => (
              <div className="flex justify-around items-center bg-light p-3 rounded-lg">
                 <div>
                     <p className="text-3xl font-bold text-blue-500">{ayurvedicInsight.currentDosha.vata}%</p>
-                    <p className="font-semibold text-sm">Vata 🌬️</p>
+                    <p className="font-semibold text-sm text-dark">Vata 🌬️</p>
                 </div>
                 <div>
                     <p className="text-3xl font-bold text-red-500">{ayurvedicInsight.currentDosha.pitta}%</p>
-                    <p className="font-semibold text-sm">Pitta 🔥</p>
+                    <p className="font-semibold text-sm text-dark">Pitta 🔥</p>
                 </div>
                  <div>
                     <p className="text-3xl font-bold text-green-500">{ayurvedicInsight.currentDosha.kapha}%</p>
-                    <p className="font-semibold text-sm">Kapha 🌊</p>
+                    <p className="font-semibold text-sm text-dark">Kapha 🌊</p>
                 </div>
             </div>
         </div>
