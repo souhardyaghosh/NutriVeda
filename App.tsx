@@ -456,7 +456,7 @@ const ComingSoonScreen: React.FC<{ title: string; onBack: () => void }> = ({ tit
       <h2 className="text-3xl font-bold text-dark mb-2">{title}</h2>
       <p className="text-gray-600 mb-8">This feature is under construction. Stay tuned!</p>
       <button onClick={onBack} className="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-secondary transition-colors">
-        Back to Home
+        Back
       </button>
     </div>
   </OnboardingCard>
@@ -476,6 +476,7 @@ const App: React.FC = () => {
   
   // Mood tracker state
   const [moodAnalysisResult, setMoodAnalysisResult] = useState<MoodAnalysisResult | null>(null);
+  const [comingSoonTitle, setComingSoonTitle] = useState<string>('');
 
 
   const [userData, setUserData] = useState<UserData>({
@@ -667,7 +668,7 @@ const App: React.FC = () => {
         );
       
       case 'womensWellness':
-        return <WomensWellnessScreen onBack={handleReset} setScreen={setScreen} />;
+        return <WomensWellnessScreen onBack={handleReset} setScreen={setScreen} setComingSoonTitle={setComingSoonTitle} />;
       
       case 'menstrualCycleCare':
         return <MenstrualCycleCareScreen onBack={() => setScreen('womensWellness')} />;
@@ -675,6 +676,9 @@ const App: React.FC = () => {
       case 'hormonalHealth':
         return <HormonalHealthScreen onBack={() => setScreen('womensWellness')} />;
         
+      case 'comingSoon':
+        return <ComingSoonScreen title={comingSoonTitle} onBack={() => setScreen('womensWellness')} />;
+
       case 'basics':
         return (
             <OnboardingStep title="Let's start with the basics" currentStep={1} totalSteps={TOTAL_STEPS} onBack={() => setScreen('planType')} onNext={() => setScreen('physicalProfile')}>

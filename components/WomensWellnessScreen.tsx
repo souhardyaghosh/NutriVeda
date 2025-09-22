@@ -64,9 +64,10 @@ const womensWellnessFeatures = [
 interface WomensWellnessScreenProps {
   onBack: () => void;
   setScreen: (screen: string) => void;
+  setComingSoonTitle: (title: string) => void;
 }
 
-const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack, setScreen }) => {
+const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack, setScreen, setComingSoonTitle }) => {
     
   const handleFeatureClick = (title: string) => {
     if (title === 'Menstrual Cycle Care') {
@@ -74,7 +75,8 @@ const WomensWellnessScreen: React.FC<WomensWellnessScreenProps> = ({ onBack, set
     } else if (title === 'Hormonal Health') {
       setScreen('hormonalHealth');
     } else {
-      alert(`The "${title}" feature is coming soon! Stay tuned for more empowering tools. ✨`);
+      setComingSoonTitle(title);
+      setScreen('comingSoon');
     }
   };
 
