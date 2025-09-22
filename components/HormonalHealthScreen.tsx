@@ -53,7 +53,7 @@ const RecipeModal: React.FC<{ recipe: Recipe | null; onClose: () => void; onImag
                         <div>
                             <h4 className="font-bold text-lg text-dark mb-2">Ingredients</h4>
                             <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                {recipe.ingredients.map((ing, i) => <li key={i}>{ing}</li>)}
+                                {recipe.ingredients?.map((ing, i) => <li key={i}>{ing}</li>)}
                             </ul>
                         </div>
                          <div>
@@ -182,13 +182,13 @@ const HormonalHealthScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                                 <div className="bg-white p-6 rounded-2xl shadow-sm">
                                     <h4 className="font-bold text-xl text-dark mb-3">Lifestyle Suggestions</h4>
                                     <ul className="list-disc list-inside space-y-2 text-gray-700">
-                                        {advice.lifestyleSuggestions.map((tip, i) => <li key={i}>{tip}</li>)}
+                                        {advice.lifestyleSuggestions?.map((tip, i) => <li key={i}>{tip}</li>)}
                                     </ul>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm">
                                     <h4 className="font-bold text-xl text-dark mb-3">Food Suggestions</h4>
                                      <ul className="list-disc list-inside space-y-2 text-gray-700">
-                                        {advice.foodSuggestions.map((food, i) => <li key={i}>{food}</li>)}
+                                        {advice.foodSuggestions?.map((food, i) => <li key={i}>{food}</li>)}
                                     </ul>
                                 </div>
                             </div>
@@ -203,7 +203,7 @@ const HormonalHealthScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                         <div>
                            <h3 className="text-2xl font-bold text-dark text-center mb-6">Nourishing Recipes</h3>
                             <div className="grid md:grid-cols-2 gap-8">
-                                {advice.recipes.map((recipe, i) => (
+                                {advice.recipes?.map((recipe, i) => (
                                     <div key={i} className="bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                                         <div className="p-6 flex-grow">
                                             <h4 className="font-bold text-xl text-dark">{recipe.name}</h4>
