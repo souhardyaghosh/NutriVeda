@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { patientProfile, appointments, prescriptions, labReports, ayurvedicInsight, billing } from '../dummyData';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -44,22 +44,74 @@ const ProgressDial: React.FC<{ percentage: number; colorClass: string }> = ({ pe
     );
 };
 
-const LineChart: React.FC<{ data: { date: string, value: number }[]; color: string }> = ({ data, color }) => {
-    const width = 200, height = 50;
+const LineChart: React.FC<{ data: { date: string, value: number }[]; color: string; unit: string }> = ({ data, color, unit }) => {
+    const [tooltip, setTooltip] = useState<{ x: number, y: number, date: string, value: number } | null>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
+
+    const width = 200, height = 60, padding = 5;
     const values = data.map(d => d.value);
     const min = Math.min(...values) * 0.95;
     const max = Math.max(...values) * 1.05;
     
-    const points = data.map((point, i) => {
+    const getCoords = (value: number, i: number) => {
         const x = (i / (data.length - 1)) * width;
-        const y = height - ((point.value - min) / (max - min)) * height;
+        const y = height - padding - ((value - min) / (max - min)) * (height - padding * 2);
+        return {x, y};
+    };
+
+    const points = data.map((point, i) => {
+        const {x, y} = getCoords(point.value, i);
         return `${x},${y}`;
     }).join(' ');
 
+    const handleMouseMove = (event: React.MouseEvent, index: number) => {
+        if (!svgRef.current) return;
+        const point = data[index];
+        const parentRect = svgRef.current.parentElement!.getBoundingClientRect();
+        
+        // Use coordinates relative to the parent for positioning
+        const relativeX = event.clientX - parentRect.left;
+        const relativeY = event.clientY - parentRect.top;
+
+        setTooltip({ x: relativeX, y: relativeY, ...point });
+    };
+
     return (
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-12">
-            <polyline fill="none" stroke={color} strokeWidth="2" points={points} />
-        </svg>
+        <div className="relative" onMouseLeave={() => setTooltip(null)}>
+            <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="w-full h-16 overflow-visible">
+                <polyline fill="none" stroke={color} strokeWidth="2.5" points={points} strokeLinecap="round" strokeLinejoin="round"/>
+                {data.map((point, i) => {
+                    const { x, y } = getCoords(point.value, i);
+                    const rectWidth = data.length > 1 ? width / (data.length - 1) : width;
+                    return (
+                        <g key={i}>
+                            <circle cx={x} cy={y} r="3" fill={color} />
+                            <rect
+                                x={x - rectWidth / 2}
+                                y={0}
+                                width={rectWidth}
+                                height={height}
+                                fill="transparent"
+                                onMouseMove={(e) => handleMouseMove(e, i)}
+                            />
+                        </g>
+                    );
+                })}
+            </svg>
+            {tooltip && (
+                <div
+                    className="absolute bg-dark text-white text-xs rounded-md p-2 shadow-lg pointer-events-none z-10"
+                    style={{ 
+                        top: tooltip.y - 50, // Position above the cursor
+                        left: tooltip.x,
+                        transform: 'translateX(-50%)' 
+                    }}
+                >
+                    <div className="font-bold">{tooltip.value} {unit}</div>
+                    <div className="text-gray-300">{tooltip.date}</div>
+                </div>
+            )}
+        </div>
     );
 };
 
@@ -106,7 +158,7 @@ const PatientProfileCard: React.FC = () => (
     <Card className="md:col-span-2 xl:col-span-3 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="flex-shrink-0 w-24 h-24 bg-light rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6s6-2.69 6-6s-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4-4z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8z"/></svg>
             </div>
             <div>
                 <h2 className="text-4xl font-bold">{patientProfile.name}</h2>
@@ -249,29 +301,90 @@ const PrescriptionCard: React.FC = () => (
 );
 
 const LabReportCard: React.FC = () => {
-    const statusInfo: {[key: string]: { icon: string, color: string }} = {
+    const [activeTrend, setActiveTrend] = useState<string | null>(null);
+
+    const statusInfo: { [key: string]: { icon: string, color: string } } = {
         'normal': { icon: '✅', color: 'text-green-600' },
         'high': { icon: '⚠️', color: 'text-orange-600' },
         'deficient': { icon: '❌', color: 'text-red-600' }
     };
 
+    const trendableReports: { [key: string]: { data: { date: string, value: number }[], color: string, unit: string } } = {
+        'Sugar Fasting': { data: labReports.trends.sugarFasting, color: '#F97316', unit: 'mg/dL' },
+        'Thyroid (TSH)': { data: labReports.trends.thyroid, color: '#EF4444', unit: 'µIU/mL' },
+        'Vitamin D': { data: labReports.trends.vitaminD, color: '#3B82F6', unit: 'ng/mL' }
+    };
+
+    const handleTrendClick = (testName: string) => {
+        if (trendableReports.hasOwnProperty(testName)) {
+            setActiveTrend(prev => prev === testName ? null : testName);
+        } else {
+            setActiveTrend(null);
+        }
+    };
+
+    const getStatusForValue = (testName: string, value: number) => {
+        const range = (labReports.ranges as any)[testName];
+        if (!range) return { text: 'N/A', color: 'bg-gray-200 text-gray-800' };
+
+        if (value < range.low) return { text: 'LOW', color: 'bg-blue-100 text-blue-800' };
+        if (value > range.high) return { text: 'HIGH', color: 'bg-red-100 text-red-800' };
+        return { text: 'NORMAL', color: 'bg-green-100 text-green-800' };
+    };
+    
+    const renderTrendDetails = () => {
+        if (!activeTrend || !trendableReports[activeTrend]) {
+            return (
+                <div className="text-center text-gray-400">
+                    <p>Click on a report above to view its historical trend.</p>
+                </div>
+            );
+        }
+
+        const latestReport = labReports.reports.find(r => r.test === activeTrend);
+        const latestValue = latestReport ? parseFloat(latestReport.result) : 0;
+        const status = getStatusForValue(activeTrend, latestValue);
+        const trendInfo = trendableReports[activeTrend];
+
+        return (
+            <div className="animate-fadeIn">
+                <div className="flex justify-between items-center mb-1">
+                    <h5 className="font-semibold text-dark text-sm">{activeTrend} Trend</h5>
+                    <span className={`px-3 py-1 text-xs font-bold rounded-full ${status.color}`}>{status.text}</span>
+                </div>
+                <LineChart 
+                    data={trendInfo.data} 
+                    color={trendInfo.color} 
+                    unit={trendInfo.unit} 
+                />
+            </div>
+        );
+    };
+
     return (
         <Card className="md:col-span-2">
             <CardTitle icon={<LabIcon />} title="Lab Reports" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {labReports.reports.map((r, i) => (
-                    <div key={i} className="bg-light p-3 rounded-lg text-center">
+                    <button
+                        key={i}
+                        onClick={() => handleTrendClick(r.test)}
+                        className={`bg-light p-3 rounded-lg text-center transition-all duration-200 focus:outline-none ${
+                            activeTrend === r.test ? 'ring-2 ring-primary shadow-md' : 'hover:bg-gray-200'
+                        }`}
+                    >
                         <p className="font-bold text-sm text-dark">{r.test}</p>
                         <p className={`font-semibold text-lg ${statusInfo[r.status].color}`}>{r.result}</p>
                         <p className="text-xs text-gray-400">{r.date}</p>
-                    </div>
+                    </button>
                 ))}
             </div>
-            <div>
-                <h4 className="font-semibold text-dark mb-1">Sugar Fasting Trend</h4>
-                <LineChart data={labReports.trends.sugar} color="#F97316" />
+            
+            <div className="border-t pt-4 min-h-[8rem] flex flex-col justify-center">
+                {renderTrendDetails()}
             </div>
-            <button 
+
+            <button
                 onClick={() => alert('File upload functionality coming soon!')}
                 className="w-full mt-6 flex items-center justify-center bg-light text-primary font-bold py-2 px-4 rounded-lg border border-primary/50 hover:bg-teal-100 transition-colors"
             >
@@ -281,6 +394,7 @@ const LabReportCard: React.FC = () => {
         </Card>
     );
 };
+
 
 const AyurvedicInsightCard: React.FC = () => (
     <Card>

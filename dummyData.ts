@@ -151,13 +151,30 @@ export const labReports = {
     { test: "Vitamin D", date: "05 Sep 25", result: "18 ng/mL", status: "deficient" },
   ],
   trends: {
-    sugar: [
+    sugarFasting: [
       { date: "Jan 25", value: 95 },
       { date: "Apr 25", value: 105 },
       { date: "Jul 25", value: 102 },
       { date: "Sep 25", value: 110 },
     ],
+    thyroid: [
+      { date: "Jan 25", value: 3.5 },
+      { date: "Apr 25", value: 4.2 },
+      { date: "Jul 25", value: 4.8 },
+      { date: "Sep 25", value: 5.1 },
+    ],
+    vitaminD: [
+      { date: "Jan 25", value: 30 },
+      { date: "Apr 25", value: 25 },
+      { date: "Jul 25", value: 22 },
+      { date: "Sep 25", value: 18 },
+    ],
   },
+  ranges: {
+    'Sugar Fasting': { low: 70, high: 100 },
+    'Thyroid (TSH)': { low: 0.4, high: 4.0 },
+    'Vitamin D': { low: 20, high: 100 },
+  }
 };
 
 
