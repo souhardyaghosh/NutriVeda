@@ -14,6 +14,8 @@ import CameraView from './components/CameraView';
 import WomensWellnessScreen from './components/WomensWellnessScreen';
 import MenstrualCycleCareScreen from './components/MenstrualCycleCareScreen';
 import HormonalHealthScreen from './components/HormonalHealthScreen';
+import AyushHealthCardDashboard from './components/AyushHealthCardDashboard';
+
 
 // --- Reusable UI Components ---
 const OnboardingCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -87,7 +89,7 @@ const WelcomeScreen: React.FC<{ setScreen: (screen: string) => void }> = ({ setS
         </h2>
         <p className="text-gray-600">What would you like to do today?</p>
       </div>
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <FeatureCard
           icon={<span className={iconStyle}>🥗</span>}
           title="AI Diet Planner"
@@ -115,6 +117,13 @@ const WelcomeScreen: React.FC<{ setScreen: (screen: string) => void }> = ({ setS
           description="Track your cycle, get personalized insights, and find Ayurvedic remedies for hormonal balance."
           buttonText="Get Started"
           onClick={() => setScreen('womensWellness')}
+        />
+         <FeatureCard
+          icon={<span className={iconStyle}>🏥</span>}
+          title="Ayush Health Card"
+          description="Access a complete visual dashboard for patient records, appointments, prescriptions, and billing."
+          buttonText="View Dashboard"
+          onClick={() => setScreen('ayushHealthCard')}
         />
       </div>
     </div>
@@ -678,6 +687,9 @@ const App: React.FC = () => {
         
       case 'comingSoon':
         return <ComingSoonScreen title={comingSoonTitle} onBack={() => setScreen('womensWellness')} />;
+      
+      case 'ayushHealthCard':
+        return <AyushHealthCardDashboard onBack={handleReset} />;
 
       case 'basics':
         return (

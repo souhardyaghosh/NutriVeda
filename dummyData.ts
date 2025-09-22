@@ -113,3 +113,77 @@ export const dummyPlans = {
     'Jain': dummyVegetarianPlan, // Fallback for Jain
     'Family': dummyFamilyPlan,
 };
+
+
+// --- AYUSH HEALTH CARD DUMMY DATA ---
+
+export const patientProfile = {
+  name: "Debeshi Sen",
+  age: 21,
+  gender: "Female",
+  abhaId: "78-3345-9981",
+  allergies: ["Shrimps", "Milk"],
+  chronicConditions: ["None"],
+  emergencyContact: "Anand Sen (Father), +91 9876543210",
+};
+
+export const appointments = [
+  { date: "01 Oct 25", doctor: "Dr. Neel", specialty: "Panchakarma Therapy", mode: "OPD", status: "Scheduled" },
+  { date: "27 Sep 25", doctor: "Dr. Kavita", specialty: "Ayurveda Gynae", mode: "OPD", status: "Upcoming" },
+  { date: "25 Sep 25", doctor: "Dr. Arjun", specialty: "Ayurveda Nutrition", mode: "Telemed", status: "Upcoming" },
+  { date: "21 Sep 25", doctor: "Dr. Sharma", specialty: "General Medicine", mode: "OPD", status: "Completed" },
+  { date: "18 Sep 25", doctor: "Dr. Meera", specialty: "Ayurveda Gynae", mode: "Telemed", status: "Completed" },
+];
+
+export const prescriptions = [
+  { name: "Shatavari Capsules", dosage: "2 caps daily after breakfast", duration: 60, daysCompleted: 10, status: "Active", notes: "Hormonal support ⚖️" },
+  { name: "Ashwagandha Tab", dosage: "1 tab, twice daily after meals", duration: 30, daysCompleted: 15, status: "Active", notes: "Stress balance 🌿" },
+  { name: "Triphala Churna", dosage: "1 tsp with lukewarm water", duration: 20, daysCompleted: 20, status: "Active", notes: "Digestion 💧" },
+  { name: "Brahmi Powder", dosage: "1 tsp in warm milk, night", duration: 15, daysCompleted: 15, status: "Completed", notes: "Focus & memory 🧠" },
+  { name: "Tulsi Tea", dosage: "1 cup morning & evening", duration: 10, daysCompleted: 10, status: "Completed", notes: "Immunity 🍵" },
+];
+
+export const labReports = {
+  reports: [
+    { test: "CBC", date: "15 Sep 25", result: "Normal", status: "normal" },
+    { test: "Sugar Fasting", date: "12 Sep 25", result: "110 mg/dL", status: "high" },
+    { test: "Thyroid (TSH)", date: "10 Sep 25", result: "5.1 µIU/mL", status: "high" },
+    { test: "Vitamin D", date: "05 Sep 25", result: "18 ng/mL", status: "deficient" },
+  ],
+  trends: {
+    sugar: [
+      { date: "Jan 25", value: 95 },
+      { date: "Apr 25", value: 105 },
+      { date: "Jul 25", value: 102 },
+      { date: "Sep 25", value: 110 },
+    ],
+  },
+};
+
+
+export const ayurvedicInsight = {
+  prakriti: "Pitta-Kapha",
+  currentDosha: { vata: 20, pitta: 55, kapha: 25 },
+  recommendations: [
+    { text: "Cooling diet (coconut, cucumber)", icon: "🥥" },
+    { text: "Avoid fried & spicy foods", icon: "🌶️" },
+    { text: "Brahmi tea for calmness", icon: "🍵" },
+    { text: "Evening meditation", icon: "🧘‍♀️" },
+  ],
+};
+
+export const billing = {
+  grandTotal: 3400,
+  items: [
+    { item: "OPD Consultation Fee", cost: 600 },
+    { item: "Lab Test – CBC", cost: 300 },
+    { item: "Lab Test – Sugar Fasting", cost: 400 },
+    { item: "Lab Test – Thyroid", cost: 600 },
+    { item: "Ayurvedic Medicines (30d)", cost: 1500 },
+  ],
+  breakdown: [
+      { category: 'Consultation', value: 600 },
+      { category: 'Lab Tests', value: 1300 },
+      { category: 'Medicines', value: 1500 },
+  ]
+};
