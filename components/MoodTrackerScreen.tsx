@@ -230,7 +230,6 @@ const WeeklyMoodChart: React.FC<{ data: MoodAnalysisResult['weeklyMoods'] }> = (
         return [x, y];
     };
 
-    // Fix: Corrected the event type to match the source element (<rect>).
     const handleMouseMove = (event: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) => {
         const svg = svgRef.current;
         if (!svg) return;
@@ -313,7 +312,7 @@ const WeeklyMoodChart: React.FC<{ data: MoodAnalysisResult['weeklyMoods'] }> = (
                         <p className="font-bold mb-2 text-dark">{tooltip.day}</p>
                         {(['kapha', 'pitta', 'vata'] as const).map(dosha => (
                             <div key={dosha} className="flex justify-between items-center gap-4">
-                               <span style={{color: doshaConfig[dosha].color}}>{doshaConfig[dosha].name}:</span>
+                               <span style={{color: doshaConfig[dosha].color}} className="text-dark">{doshaConfig[dosha].name}:</span>
                                <span className="font-semibold text-gray-800">{tooltip.balance[dosha]}</span>
                            </div>
                         ))}
@@ -427,9 +426,9 @@ const BalanceAndRecs: React.FC<{ result: MoodAnalysisResult }> = ({ result }) =>
                 <EmbeddedDonutChart segments={doshaSegments} centerValue="Doshas" centerLabel="Balance" />
             </div>
             <div className="space-y-4 flex-grow">
-                <Recommendation icon="🥗" title="Diet" text={result.recommendations.diet} />
-                <Recommendation icon="🏃‍♂️" title="Lifestyle" text={result.recommendations.lifestyle} />
-                <Recommendation icon="🧘‍♀️" title="Mindfulness" text={result.recommendations.mindfulness} />
+                <Recommendation icon="🥗" title="What to Eat" text={result.recommendations.diet} />
+                <Recommendation icon="🏃‍♂️" title="Lifestyle Activity" text={result.recommendations.lifestyle} />
+                <Recommendation icon="🧘‍♀️" title="Yoga & Pranayama" text={result.recommendations.mindfulness} />
             </div>
         </Card>
     );

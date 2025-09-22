@@ -28,11 +28,8 @@ const ProgressTracker: React.FC<{ currentStep: number; totalSteps: number }> = (
   );
 };
 
-const NavButtons: React.FC<{ onBack: () => void; onNext: () => void; nextDisabled?: boolean; nextText?: string }> = ({ onBack, onNext, nextDisabled = false, nextText = 'Next' }) => (
-  <div className="flex justify-between mt-10">
-    <button onClick={onBack} className="bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
-      Back
-    </button>
+const NavButtons: React.FC<{ onNext: () => void; nextDisabled?: boolean; nextText?: string }> = ({ onNext, nextDisabled = false, nextText = 'Next' }) => (
+  <div className="flex justify-end mt-10">
     <button onClick={onNext} disabled={nextDisabled} className="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-secondary transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
       {nextText}
     </button>
@@ -411,13 +408,16 @@ const FoodAnalysisDisplay: React.FC<{ analysis: FoodAnalysis, image: string, onR
 
 const OnboardingStep: React.FC<{title: string; subtitle?: string; children: React.ReactNode; currentStep: number; totalSteps: number; onBack: () => void; onNext: () => void; nextDisabled?: boolean; nextText?: string;}> = ({ title, subtitle, children, currentStep, totalSteps, onBack, onNext, nextDisabled, nextText }) => (
     <OnboardingCard>
-        <ProgressTracker currentStep={currentStep} totalSteps={totalSteps} />
-        <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-dark">{title}</h2>
-            {subtitle && <p className="text-gray-600 mt-2">{subtitle}</p>}
+        <div className="relative">
+            <BackButton onClick={onBack} />
+            <ProgressTracker currentStep={currentStep} totalSteps={totalSteps} />
+            <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-dark">{title}</h2>
+                {subtitle && <p className="text-gray-600 mt-2">{subtitle}</p>}
+            </div>
+            <div className="space-y-6">{children}</div>
+            <NavButtons onNext={onNext} nextDisabled={nextDisabled} nextText={nextText} />
         </div>
-        <div className="space-y-6">{children}</div>
-        <NavButtons onBack={onBack} onNext={onNext} nextDisabled={nextDisabled} nextText={nextText} />
     </OnboardingCard>
 );
 

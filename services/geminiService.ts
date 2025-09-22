@@ -118,9 +118,9 @@ const moodAnalysisSchema = {
         recommendations: {
             type: Type.OBJECT,
             properties: {
-                diet: { type: Type.STRING, description: "A short, actionable dietary recommendation." },
-                lifestyle: { type: Type.STRING, description: "A short, actionable lifestyle recommendation." },
-                mindfulness: { type: Type.STRING, description: "A short, actionable mindfulness or meditation recommendation." }
+                diet: { type: Type.STRING, description: "Suggest specific foods or a mini-meal to eat. For example: 'Eat a warm bowl of oatmeal with cinnamon and ginger.' or 'Sip on some cooling cucumber and mint water.'" },
+                lifestyle: { type: Type.STRING, description: "Suggest a concrete lifestyle activity. For example: 'Take a gentle 15-minute walk in nature.' or 'Try some light, calming music before bed.'" },
+                mindfulness: { type: Type.STRING, description: "Suggest a specific yoga asana or pranayama technique. For example: 'Practice 5 minutes of Nadi Shodhana (Alternate Nostril Breathing).' or 'Try a few rounds of gentle Cat-Cow pose (Marjaryasana-Bitilasana).'" }
             }
         },
         weeklyMoods: {
@@ -380,7 +380,7 @@ export const analyzeMood = async (
     1.  **detectedMood**: Infer the user's primary emotion (e.g., "Peaceful", "Stressed", "Joyful", "Tired").
     2.  **doshaBalance**: Based on the mood, estimate the current dominance of the three doshas (Vata, Pitta, Kapha). The percentages must sum to 100. For example, stress might increase Vata and Pitta. Joy might indicate balanced doshas.
     3.  **summary**: Write a brief, empathetic summary connecting the detected mood to the likely doshic imbalance.
-    4.  **recommendations**: Provide one concise, actionable tip for each category (diet, lifestyle, mindfulness) to help balance their doshas based on their current state.
+    4.  **recommendations**: Provide specific, actionable tips. For 'diet', suggest a food or drink. For 'lifestyle', suggest an activity. For 'mindfulness', suggest a specific yoga or pranayama technique.
     5.  **weeklyMoods**: Generate a realistic 7-day dosha balance history for a chart. The values for each dosha should be plausible and between 0-80. The last day's dosha balance should reflect the current analysis.
     6.  **wellnessAdvice**: If wellness data was provided, give a brief, relevant piece of advice. For example, if sleep is low, advise on better sleep hygiene. If it's not provided, omit this field.
     `;
