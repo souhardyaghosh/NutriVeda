@@ -25,6 +25,7 @@ const LabIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className={iconCla
 const InsightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>;
 const BillingIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>;
 const WarningIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.22 3.006-1.742 3.006H4.42c-1.522 0-2.492-1.672-1.742-3.006l5.58-9.92zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" /></svg>;
+const UploadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" /></svg>;
 
 // --- Chart Components ---
 
@@ -116,7 +117,7 @@ const PatientProfileCard: React.FC = () => (
                 </div>
             </div>
             <div className="sm:ml-auto text-left bg-white/20 p-4 rounded-lg">
-                <h4 className="font-bold mb-2">Alerts</h4>
+                <h4 className="font-bold mb-2">Allergy</h4>
                 {patientProfile.allergies.map(allergy => (
                     <div key={allergy} className="flex items-center">
                         <WarningIcon /> {allergy}
@@ -270,6 +271,13 @@ const LabReportCard: React.FC = () => {
                 <h4 className="font-semibold text-dark mb-1">Sugar Fasting Trend</h4>
                 <LineChart data={labReports.trends.sugar} color="#F97316" />
             </div>
+            <button 
+                onClick={() => alert('File upload functionality coming soon!')}
+                className="w-full mt-6 flex items-center justify-center bg-light text-primary font-bold py-2 px-4 rounded-lg border border-primary/50 hover:bg-teal-100 transition-colors"
+            >
+                <UploadIcon />
+                Upload New Report
+            </button>
         </Card>
     );
 };
@@ -444,8 +452,8 @@ const AyushHealthCardDashboard: React.FC<AyushHealthCardDashboardProps> = ({ onB
         <PatientProfileCard />
         <AppointmentCard />
         <PrescriptionCard />
-        <LabReportCard />
         <AyurvedicInsightCard />
+        <LabReportCard />
         <BillingCard />
       </div>
     </div>
