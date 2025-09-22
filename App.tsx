@@ -11,6 +11,7 @@ import { GENDERS, ACTIVITY_LEVELS, DIETARY_PREFERENCES, DIETARY_RESTRICTIONS, HE
 import DonutChart from './components/DonutChart';
 import MoodTrackerScreen from './components/MoodTrackerScreen';
 import CameraView from './components/CameraView';
+import WomensWellnessScreen from './components/WomensWellnessScreen';
 
 // --- Reusable UI Components ---
 const OnboardingCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -664,7 +665,7 @@ const App: React.FC = () => {
         );
       
       case 'womensWellness':
-        return <ComingSoonScreen title="Women's Wellness" onBack={handleReset} />;
+        return <WomensWellnessScreen onBack={handleReset} />;
 
       case 'basics':
         return (
