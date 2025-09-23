@@ -1,3 +1,4 @@
+
 export const GENDERS = ['Female', 'Male', 'Other'] as const;
 
 export const ACTIVITY_LEVELS = [
@@ -38,6 +39,3 @@ export const EATING_OUT_FREQUENCY = [
     { name: 'Occasionally', description: '3-5 times a week.' },
     { name: 'Frequently', description: 'More than 5 times a week.' },
 ];
-
-
-export const COMMON_CRAVINGS = ['Pizza', 'Burger', 'Ice Cream', 'Pasta', 'French Fries', 'Chocolate Cake'];

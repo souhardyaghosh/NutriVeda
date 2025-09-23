@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -91,11 +92,11 @@ const WelcomeScreen: React.FC<{ setScreen: (screen: string) => void }> = ({ setS
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <FeatureCard
-          icon={<span className={iconStyle}>🥗</span>}
-          title="AI Diet Planner"
-          description="Generate a personalized diet plan for yourself or family, tailored to your unique goals and lifestyle."
-          buttonText="Create a Plan"
-          onClick={() => setScreen('planType')}
+          icon={<span className={iconStyle}>🍕</span>}
+          title="Healthy Cheat Day"
+          description="Craving something unhealthy? Find a delicious and healthier Indian alternative guilt-free."
+          buttonText="Find a Swap"
+          onClick={() => setScreen('cheatDay')}
         />
         <FeatureCard
           icon={<span className={iconStyle}>📸</span>}
@@ -642,6 +643,18 @@ const App: React.FC = () => {
     switch (screen) {
       case 'welcome':
         return <WelcomeScreen setScreen={setScreen} />;
+      case 'cheatDay':
+        return (
+            <div className="w-full max-w-2xl mx-auto">
+                <div className="relative">
+                    <button onClick={handleReset} className="text-primary font-semibold hover:text-secondary flex items-center gap-1 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                        Back to Home
+                    </button>
+                    <CheatDayHelper />
+                </div>
+            </div>
+        );
       case 'planType':
         return <PlanTypeScreen setScreen={setScreen} updateData={updateData} onBack={() => setScreen('welcome')} />;
       
@@ -883,7 +896,6 @@ const App: React.FC = () => {
                 onUpdateMeal={handleUpdateMeal}
                 onReset={handleReset} 
               />
-              <CheatDayHelper />
             </>
           );
         }
